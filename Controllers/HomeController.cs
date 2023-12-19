@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Blogg.Controllers
 {
     [ApiController]
-    [Route("")]
+    [Route("/")]
     public class HomeController : Controller
     {
         [HttpGet("")]
