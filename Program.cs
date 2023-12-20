@@ -7,7 +7,6 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<BlogDataContext>();
 
 var app = builder.Build();
-
 //realizar mapeamento das controllers
 app.MapControllers();
 

@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Blogg.Data;
 using Blogg.Models;
+using Blogg.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,21 +30,33 @@ namespace Blogg.Controllers
         }
 
         [HttpPost("v1/categories/")]
-        public async Task<IActionResult> PostAsync(
-            [FromBody] Category model,
+        public async Task<IActionResult> PostAsyncs(
+            [FromBody] CreateCategoryViewModel model,
             [FromServices] BlogDataContext context
         )
         {
             try
             {
-                await context.Categories.AddAsync(model);
+                if (!ModelState.IsValid) // Verifica a validação do modelo
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var category = new Category
+                {
+                    Id=0,
+                    Name = model.Name,
+                    Slug = model.Slug.ToLower(),
+                };
+
+                await context.Categories.AddAsync(category);
                 await context.SaveChangesAsync();
 
-                return Created($"v1/categories/{model.Id}", model);
+                return Created($"v1/categories/{category.Id}", category);
             }
             catch (DbUpdateException ex)
             {
-                return StatusCode(500, "Não foi possível incluir categoria");
+                return StatusCode(500, ex.InnerException);
             }
             catch (System.Exception ex)
             {
@@ -87,9 +96,8 @@ namespace Blogg.Controllers
         }
         [HttpDelete("v1/categories/{id:int}")]
         public async Task<IActionResult> DeleteAsync(
-                   [FromRoute] int id,
-                    [FromServices] BlogDataContext context
-               )
+                [FromRoute] int id,
+                [FromServices] BlogDataContext context)
         {
             try
             {
