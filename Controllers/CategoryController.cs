@@ -12,8 +12,16 @@ namespace Blogg.Controllers
         [HttpGet("v1/categories")]
         public async Task<IActionResult> GetTodos([FromServices] BlogDataContext context)
         {
-            var cat = await context.Categories.ToListAsync();
-            return Ok(cat);
+            try
+            {
+                var cat = await context.Categories.ToListAsync();
+            return Ok(new ResultViewModel<List<Category>>(cat));
+            }
+            catch 
+            {
+                 return StatusCode(500, new ResultViewModel<List<Category>>("05X04 - Falha interna no servidor"));
+            }
+            
         }
 
         [HttpGet("v1/categories/{id:int}")]
@@ -31,10 +39,11 @@ namespace Blogg.Controllers
 
         [HttpPost("v1/categories/")]
         public async Task<IActionResult> PostAsyncs(
-            [FromBody] CreateCategoryViewModel model,
+            [FromBody] EditorCategoryViewModel model,
             [FromServices] BlogDataContext context
         )
         {
+
             try
             {
                 if (!ModelState.IsValid) // Verifica a validação do modelo
@@ -67,7 +76,7 @@ namespace Blogg.Controllers
         [HttpPut("v1/categories/{id:int}")]
         public async Task<IActionResult> PutAsync(
             [FromRoute] int id,
-               [FromBody] Category model,
+               [FromBody] EditorCategoryViewModel model,
             [FromServices] BlogDataContext context
         )
         {
