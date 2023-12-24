@@ -15,13 +15,13 @@ namespace Blogg.Controllers
             try
             {
                 var cat = await context.Categories.ToListAsync();
-            return Ok(new ResultViewModel<List<Category>>(cat));
+                return Ok(new ResultViewModel<List<Category>>(cat));
             }
-            catch 
+            catch
             {
-                 return StatusCode(500, new ResultViewModel<List<Category>>("05X04 - Falha interna no servidor"));
+                return StatusCode(500, new ResultViewModel<List<Category>>("05X04 - Falha interna no servidor"));
             }
-            
+
         }
 
         [HttpGet("v1/categories/{id:int}")]
@@ -29,12 +29,19 @@ namespace Blogg.Controllers
             [FromRoute] int id,
             [FromServices] BlogDataContext context)
         {
-            var cat = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
-            if (cat == null)
-                return NotFound();
+            try
+            {
+                var cat = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
+                if (cat == null)
+                    return NotFound(new ResultViewModel<Category>("Conteudo não encontrado"));
 
+                return Ok(new ResultViewModel<Category>(cat));
+            }
+            catch
+            {
+                return StatusCode(500, new ResultViewModel<List<Category>>("05X04 - Falha interna no servidor"));
 
-            return Ok(cat);
+            }
         }
 
         [HttpPost("v1/categories/")]
@@ -53,7 +60,7 @@ namespace Blogg.Controllers
 
                 var category = new Category
                 {
-                    Id=0,
+                    Id = 0,
                     Name = model.Name,
                     Slug = model.Slug.ToLower(),
                 };

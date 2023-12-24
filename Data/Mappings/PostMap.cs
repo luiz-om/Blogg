@@ -64,7 +64,7 @@ namespace Blogg.Data.Mappings
                         .HasOne<Post>()
                         .WithMany()
                         .HasForeignKey("TagId")
-                        .HasConstraintName("FK_PostTag_TagId")
+                        .HasConstraintName("FK_PostRole_TagId")
                         .OnDelete(DeleteBehavior.Cascade));
         }
     }
